@@ -42,7 +42,7 @@ class ViewController: NSViewController, NSWindowDelegate, WGDelegate {
         
         let w = pipeline1.threadExecutionWidth
         let h = pipeline1.maxTotalThreadsPerThreadgroup / w
-        threadGroupCount = MTLSizeMake(w/2, h/2, 1)  // using values 'full-size' causes slow rendering
+        threadGroupCount = MTLSizeMake(w, h, 1)
 
         control.txtOnOff = 0    // 'no texture'
         
@@ -411,7 +411,9 @@ class ViewController: NSViewController, NSWindowDelegate, WGDelegate {
         metalTextureViewL.initialize(outTextureL)
         metalTextureViewR.initialize(outTextureR)
         
-        threadGroups = MTLSize(width:xsz, height:ysz, depth: 1)
+        let xs = xsz/threadGroupCount.width + 1
+        let ys = ysz/threadGroupCount.height + 1
+        threadGroups = MTLSize(width:xs, height:ys, depth: 1)
     }
     
     //MARK: -
@@ -567,7 +569,7 @@ class ViewController: NSViewController, NSWindowDelegate, WGDelegate {
         }
         
         let keyCode = event.charactersIgnoringModifiers!.uppercased()
-        print("KeyDown ",keyCode,event.keyCode)
+        //print("KeyDown ",keyCode,event.keyCode)
         
         wg.hotKey(keyCode)
     }
