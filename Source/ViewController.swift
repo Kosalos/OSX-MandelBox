@@ -42,7 +42,7 @@ class ViewController: NSViewController, NSWindowDelegate, WGDelegate {
         
         let w = pipeline1.threadExecutionWidth
         let h = pipeline1.maxTotalThreadsPerThreadgroup / w
-        threadGroupCount = MTLSizeMake(w*2/3, h, 1)  // using values 'full-size' causes slow rendering
+        threadGroupCount = MTLSizeMake(w/2, h/2, 1)  // using values 'full-size' causes slow rendering
 
         control.txtOnOff = 0    // 'no texture'
         
