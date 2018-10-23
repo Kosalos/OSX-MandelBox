@@ -10,7 +10,7 @@ class ViewController: NSViewController, NSWindowDelegate, WGDelegate {
     var isHighRes:Bool = true
     var control = Control()
     
-    let threadGroupCount = MTLSizeMake(20,20, 1)
+    var threadGroupCount = MTLSize()
     var threadGroups = MTLSize()
     
     lazy var device: MTLDevice! = MTLCreateSystemDefaultDevice()
@@ -40,9 +40,12 @@ class ViewController: NSViewController, NSWindowDelegate, WGDelegate {
             pipeline1 = try device.makeComputePipelineState(function: kf1)
         } catch { fatalError("error creating pipelines") }
         
+        let w = pipeline1.threadExecutionWidth
+        let h = pipeline1.maxTotalThreadsPerThreadgroup / w
+        threadGroupCount = MTLSizeMake(w*2/3, h, 1)  // using values 'full-size' causes slow rendering
+
         control.txtOnOff = 0    // 'no texture'
         
-        reset()
         wg.delegate = self
         initializeWidgetGroup()
         layoutViews()
@@ -54,6 +57,7 @@ class ViewController: NSViewController, NSWindowDelegate, WGDelegate {
         view.window?.delegate = self
         resizeIfNecessary()
         dvrCount = 1 // resize metalviews without delay
+        reset()
     }
     
     //MARK: -
@@ -133,7 +137,7 @@ class ViewController: NSViewController, NSWindowDelegate, WGDelegate {
         let sPchg:Float = 0.01
         wg.addSingleFloat("4",&control.lighting.diffuse,sPmin,sPmax,sPchg, "Bright")
         wg.addSingleFloat("5",&control.lighting.specular,sPmin,sPmax,sPchg, "Shiny")
-        wg.addSingleFloat("6",&control.fog,0.7,2,sPchg, "Fog")
+        wg.addSingleFloat("6",&control.fog,0.4,2,sPchg, "Fog")
         
         wg.addLine()
         wg.addCommand("V","Save/Load",.saveLoad)
@@ -274,6 +278,7 @@ class ViewController: NSViewController, NSWindowDelegate, WGDelegate {
         
         alterAngle(0,0)
         updateImage()
+        wg.hotKey("M")
     }
     
     func defaultJbsSettings() {
@@ -406,10 +411,19 @@ class ViewController: NSViewController, NSWindowDelegate, WGDelegate {
         metalTextureViewL.initialize(outTextureL)
         metalTextureViewR.initialize(outTextureR)
         
-        let maxsz = max(xsz,ysz) + Int(threadGroupCount.width-1)
-        threadGroups = MTLSizeMake(
-            maxsz / threadGroupCount.width,
-            maxsz / threadGroupCount.height,1)
+        threadGroups = MTLSize(width:xsz, height:ysz, depth: 1)
+        
+//        computeCommandEncoder.dispatchThreads(threadsPerGrid,
+//                                              threadsPerThreadgroup: threadsPerThreadgroup)
+//
+//
+//
+//
+//
+//        let maxsz = max(xsz,ysz) + Int(threadGroupCount.width-1)
+//        threadGroups = MTLSizeMake(
+//            maxsz / threadGroupCount.width,
+//            maxsz / threadGroupCount.height,1)
     }
     
     //MARK: -

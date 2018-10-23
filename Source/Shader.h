@@ -1,33 +1,6 @@
 #pragma once
 #include <simd/simd.h>
 
-#define XS 50
-#define YS 50
-
-#define EMPTY 0
-#define CELL  1
-#define MOVEDCELL  2
-#define BARRIER 3
-
-typedef struct {
-    int state;
-    float angle;
-    float velocity;
-} Cell;
-
-typedef struct {
-    float gravity;
-    Cell cell[XS][YS];
-} WaveTank;
-
-#ifndef __METAL_VERSION__
-
-void wtSetPointer(WaveTank *ptr);
-void wtReset(void);
-void wtMove(void);
-
-#endif
-
 typedef struct {
     matrix_float4x4 transformMatrix;
     matrix_float3x3 endPosition;
