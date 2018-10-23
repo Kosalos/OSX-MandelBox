@@ -412,18 +412,6 @@ class ViewController: NSViewController, NSWindowDelegate, WGDelegate {
         metalTextureViewR.initialize(outTextureR)
         
         threadGroups = MTLSize(width:xsz, height:ysz, depth: 1)
-        
-//        computeCommandEncoder.dispatchThreads(threadsPerGrid,
-//                                              threadsPerThreadgroup: threadsPerThreadgroup)
-//
-//
-//
-//
-//
-//        let maxsz = max(xsz,ysz) + Int(threadGroupCount.width-1)
-//        threadGroups = MTLSizeMake(
-//            maxsz / threadGroupCount.width,
-//            maxsz / threadGroupCount.height,1)
     }
     
     //MARK: -
