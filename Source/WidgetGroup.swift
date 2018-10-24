@@ -460,11 +460,12 @@ class WidgetGroup: NSView {
     
     //MARK:-
     
-    func shouldMemorizeFocus() -> Bool {
-        if focus == NONE { return false }
-        return [ .singleFloat, .dualFloat, .option ].contains(data[focus].kind)
+    func shouldMemorizeFocus(_ index:Int) -> Bool {
+        if index == NONE { return false }
+        return [ .singleFloat, .dualFloat, .command, .toggle, .option, .dropDown, .float3Dual, .float3Single, .float3xy, .float3z ].contains(data[index].kind) ||
+            [ .move, .rotate ].contains(data[index].ident)
     }
-    
+
     var pt = NSPoint()
     
     func flippedYCoord(_ pt:NSPoint) -> NSPoint {
@@ -477,22 +478,25 @@ class WidgetGroup: NSView {
         pt = flippedYCoord(event.locationInWindow)
         
         stopChanges()
-        if shouldMemorizeFocus() { previousFocus = focus }
+        if shouldMemorizeFocus(focus) { previousFocus = focus }
         
         for i in 0 ..< data.count { // move Focus to this entry?
-            if [ .singleFloat, .dualFloat, .command, .toggle, .option, .dropDown, .float3Dual, .float3Single, .float3xy, .float3z ].contains(data[i].kind) &&
-                pt.y >= data[i].yCoord && pt.y < data[i].yCoord + RowHT {
+            if pt.y >= data[i].yCoord && pt.y < data[i].yCoord + RowHT && shouldMemorizeFocus(i) {
                 focus = i
                 break
             }
         }
-        
+
         if focus != NONE {
             if data[focus].kind == .command {
                 delegate?.wgCommand(data[focus].ident)
                 
-                focus = NONE
-                if previousFocus != NONE { focus = previousFocus }
+                switch data[focus].ident {
+                case .move, .rotate : break
+                default :
+                    focus = NONE
+                    if previousFocus != NONE { focus = previousFocus }
+                }
                 
                 refresh()
                 return
@@ -508,7 +512,7 @@ class WidgetGroup: NSView {
                 return
             }
         }
-        
+
         refresh()
         stopChanges()
     }
