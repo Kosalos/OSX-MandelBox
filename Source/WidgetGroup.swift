@@ -443,7 +443,7 @@ class WidgetGroup: NSView {
         delta.y = -Float(pt.y) / 100
         
         if data[focus].kind == .singleFloat { // largest delta runs the show
-            if fabs(delta.y) > fabs(delta.x) { delta.x = delta.y }
+            if abs(delta.y) > abs(delta.x) { delta.x = delta.y }
         }
         
         refresh()
@@ -566,11 +566,11 @@ func drawText(_ x:CGFloat, _ y:CGFloat, _ color:NSColor, _ sz:CGFloat, _ str:Str
         let font = NSFont.init(name: "Helvetica", size:sz)!
         
         textFontAttributes = [
-            NSAttributedStringKey.font: font,
-            NSAttributedStringKey.foregroundColor: color,
-            NSAttributedStringKey.paragraphStyle: paraStyle,
+            NSAttributedString.Key.font: font,
+            NSAttributedString.Key.foregroundColor: color,
+            NSAttributedString.Key.paragraphStyle: paraStyle,
         ]
     }
     
-    str.draw(in: CGRect(x:x, y:y, width:800, height:100), withAttributes: textFontAttributes as? [NSAttributedStringKey : Any])
+    str.draw(in: CGRect(x:x, y:y, width:800, height:100), withAttributes: textFontAttributes as? [NSAttributedString.Key : Any])
 }
